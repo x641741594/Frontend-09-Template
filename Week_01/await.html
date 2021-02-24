@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>异步编程</title>
+</head>
+<body>
+  <div class="lightBox">
+    <div class="item red"></div>
+    <div class="item yellow"></div>
+    <div class="item green"></div>
+
+  </div>
+  <button id="but">开始</button>
+  <script>
+    function show(i){
+      // console.log(i)
+      let lights = document.getElementsByClassName('item')
+      for (let i = 0; i < 3; i++) {
+        let el = lights[i]
+        el.classList.remove('light')
+      }
+      lights[i].classList.add('light')
+    }
+    function sleep(t){
+      return new Promise((resolve,reject)=>{
+        setTimeout(resolve, t)
+      })
+    }
+    async function go(){
+      while(true){
+        show(0)
+        await sleep(10000)
+        show(1)
+        await sleep(2000)
+        show(2)
+        await sleep(5000)
+      }
+    }
+    let but = document.getElementById('but')
+    but.addEventListener('click',go)
+    // go()
+  </script>
+  <style>
+    .lightBox{
+      width: 300px;
+      height: 100px;
+      background: black;
+      border-radius: 10px;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+    }
+    .item{
+      width: 80px;
+      height: 80px;
+      background: white;
+      border-radius: 40px;
+    }
+    .red.light{
+      background: red;
+      /* opacity: 0; */
+    }
+    .yellow.light{
+      background: yellow;
+      /* opacity: 0; */
+    }
+    .green.light{
+      background: green;
+      /* opacity: 0; */
+    }
+  </style>
+</body>
+</html>

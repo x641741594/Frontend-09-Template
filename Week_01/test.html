@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>第一周作业</title>
+</head>
+
+<body>
+  <div id="box">
+
+  </div>
+</body>
+<script>
+  let pattern = [
+    [0, 0, 0],
+    [0, 0, 0],
+    [0, 0, 0]
+  ];
+  let flag = 1
+
+  function show() {
+    let box = document.getElementById('box')
+    box.innerHTML = ''
+    pattern.map((col, y) => {
+      col.map((item, x) => {
+        let cell = document.createElement('div')
+        cell.classList.add('cell')
+        cell.addEventListener('click', () => clickCell(y, x))
+        cell.innerHTML =
+          item == 1 ? '⭕️' :
+          item == 2 ? '❌' : '';
+        box.appendChild(cell)
+      })
+      box.appendChild(document.createElement('br'))
+    })
+  }
+
+  function clickCell(x, y) {
+    pattern[x][y] = flag
+    // console.log(check())
+    if (check(pattern, flag)) {
+      if (flag === 1) {
+        // console.log()
+        alert('⭕️赢了哦！')
+      }
+      if (flag === 2) {
+        alert('❌赢了哦！')
+      }
+    }
+    flag = 3 - flag
+    show(pattern)
+    comMove()
+  }
+
+  function check(pattern, flag) {
+    {
+      for (let y = 0; y < 3; y++) {
+        let win = true
+        for (let x = 0; x < 3; x++) {
+          if (pattern[y][x] !== flag) {
+            win = false
+          }
+        }
+        if (win)
+          return true
+      }
+    } {
+      let win = true
+      for (let y = 0; y < 3; y++) {
+        let win = true
+
+        for (let x = 0; x < 3; x++) {
+          if (pattern[x][y] !== flag) {
+            win = false
+          }
+        }
+        if (win)
+          return true
+      }
+    } {
+      let win = true
+      for (let y = 0; y < 3; y++) {
+        if (pattern[y][2 - y] !== flag) {
+          win = false
+        }
+      }
+      if (win)
+        return true
+    } {
+      let win = true
+      for (let y = 0; y < 3; y++) {
+        if (pattern[y][y] !== flag) {
+          win = false
+        }
+      }
+      if (win)
+        return true
+    }
+    return false
+  }
+
+  function clone(pattern) {
+    return JSON.parse(JSON.stringify(pattern))
+  }
+
+  function willWin(pattern, flag) {
+    for (let y = 0; y < 3; y++) {
+      for (let x = 0; x < 3; x++) {
+        if (pattern[y][x])
+          continue
+        let temp = clone(pattern)
+        temp[y][x] = flag
+        if (check(temp, flag)) {
+          return [y, x]
+        }
+      }
+    }
+
+    return false
+  }
+
+  function bestChoice(pattern, flag) {
+    let p
+    if (p = willWin(pattern, flag)) {
+      return {
+        point: willWin(pattern, flag),
+        res: 1
+      }
+    }
+    let point = null
+    let res = -2
+    outer: for (let y = 0; y < 3; y++) {
+      for (let x = 0; x < 3; x++) {
+        if (pattern[y][x]) continue
+        let temp = clone(pattern)
+        temp[y][x] = flag
+        let r = bestChoice(temp, 3 - flag).res
+        if (-r > res) {
+          point = [y, x]
+          res = -r
+        }
+        if (res == 1) {
+          break outer
+        }
+      }
+    }
+    return {
+      point: point,
+      res: point ? res : 0
+    }
+  }
+
+  function comMove() {
+    let choice = bestChoice(pattern, flag)
+    if (choice.point)
+      pattern[choice.point[0]][choice.point[1]] = flag
+    if (check(pattern, flag)) {
+      if (flag === 1) {
+        // console.log()
+        alert('⭕️赢了哦！')
+      }
+      if (flag === 2) {
+        alert('❌赢了哦！')
+      }
+    }
+    flag = 3 - flag
+    show(pattern)
+  }
+  show(pattern)
+</script>
+<style>
+  .cell {
+    width: 100px;
+    height: 100px;
+    line-height: 100px;
+    font-size: 50px;
+    vertical-align: middle;
+    text-align: center;
+    display: inline-block;
+    border: 5px solid;
+    background: cornflowerblue;
+  }
+</style>
+
+</html>
