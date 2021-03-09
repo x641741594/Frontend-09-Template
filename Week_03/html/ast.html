@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>
+    第三周作业
+  </title>
+</head>
+
+<body>
+
+</body>
+<script>
+  // let exp = /([0-9\.]+)|([ \t\n\r]+)|([\r\n]+)|(\*)|(\/)|(\+)|(\-)/g
+  let regexp = /([0-9\.]+)|([ \t\n\r]+)|([\r\n]+)|(\*)|(\/)|(\+)|(\-)/g
+  let dictionary = ['Number', 'Whitespace', 'LineTerminator', '*', '/', '+', '-']
+  let source = []
+  function* tokenize(str) {
+    var res = null
+    let lastIndex = 0
+    while (true) {
+      lastIndex = regexp.lastIndex
+      res = regexp.exec(str)
+      // console.log(res)
+      if (!res) break;
+      if (regexp.lastIndex - lastIndex > res[0].length) break;
+      let token = {
+        type: null,
+        val: null
+      }
+
+      for (let i = 1; i <= dictionary.length; i++) {
+        if (res[i]) {
+          token.type = dictionary[i - 1]
+          console.log()
+        }
+      }
+      token.val = res[0]
+      yield token
+      // console.log(res)
+    }
+    yield {
+      type: 'EOF'
+    }
+  }
+  for (const token of tokenize("1024 + 300 - 100")) {
+    // console.log(token)
+    if(token.type!=='Whitespace'&&token.type!=='LineTerminator'){
+      source.push(token)
+    }
+  }
+
+  function add(str) {
+    if (str[0].type === 'mult') {
+      let node = {
+        type: 'add',
+        children: [str[0]]
+      }
+      str[0] = node
+      return add(str)
+    }
+    if (str[0].type === 'add' && str[1] && str[1].type === '+') {
+      let node = {
+        type: 'add',
+        operator: '+',
+        children: []
+      }
+      node.children.push(str.shift())
+      node.children.push(str.shift())
+      mult(str)
+      node.children.push(str.shift())
+      str.unshift(node)
+      return add(str)
+    }
+    if (str[0].type === 'add' && str[1] && str[1].type === '-') {
+      let node = {
+        type: 'add',
+        operator: '-',
+        children: []
+      }
+      node.children.push(str.shift())
+      node.children.push(str.shift())
+      mult(str)
+      node.children.push(str.shift())
+      str.unshift(node)
+      return add(str)
+    }
+    if (str[0].type === 'add') {
+      return str[0]
+    }
+    mult(str)
+    return add(str)
+  }
+
+  function exp(str) {
+    if(str[0].type==='add'&&str[1]&&str[1].type==='EOF'){
+      let node = {
+        type:'exp',
+        children:[str.shift(),str.shift()]
+      }
+      str.unshift(node)
+      return node
+    }
+    add(str)
+    return exp(str)
+  }
+
+  function mult(str) {
+    if (str[0].type === 'Number') {
+      let node = {
+        type: 'mult',
+        children: [str[0]]
+      }
+      str[0] = node
+      return mult(str)
+    }
+    if (str[0].type === 'mult' && str[1] && str[1].type === '*') {
+      let node = {
+        type: 'mult',
+        operator: '*',
+        children: []
+      }
+      node.children.push(str.shift())
+      node.children.push(str.shift())
+      node.children.push(str.shift())
+      str.unshift(node)
+      return mult(str)
+    }
+    if (str[0].type === 'mult' && str[1] && str[1].type === '/') {
+      let node = {
+        type: 'mult',
+        operator: '/',
+        children: []
+      }
+      node.children.push(str.shift())
+      node.children.push(str.shift())
+      node.children.push(str.shift())
+      str.unshift(node)
+      return mult(str)
+    }
+    if (str[0].type === 'mult') {
+      return str[0]
+    }
+  }
+  console.log(exp(source))
+</script>
+<style></style>
+
+</html>
