@@ -14,7 +14,6 @@
 
 </body>
 <script>
-  // let exp = /([0-9\.]+)|([ \t\n\r]+)|([\r\n]+)|(\*)|(\/)|(\+)|(\-)/g
   let regexp = /([0-9\.]+)|([ \t\n\r]+)|([\r\n]+)|(\*)|(\/)|(\+)|(\-)/g
   let dictionary = ['Number', 'Whitespace', 'LineTerminator', '*', '/', '+', '-']
   let source = []
@@ -53,14 +52,14 @@
     }
   }
 
-  function add(str) {
+  function AdditiveExpression(str) {
     if (str[0].type === 'mult') {
       let node = {
         type: 'add',
         children: [str[0]]
       }
       str[0] = node
-      return add(str)
+      return AdditiveExpression(str)
     }
     if (str[0].type === 'add' && str[1] && str[1].type === '+') {
       let node = {
@@ -70,10 +69,10 @@
       }
       node.children.push(str.shift())
       node.children.push(str.shift())
-      mult(str)
+      MultiplicativeExpression(str)
       node.children.push(str.shift())
       str.unshift(node)
-      return add(str)
+      return AdditiveExpression(str)
     }
     if (str[0].type === 'add' && str[1] && str[1].type === '-') {
       let node = {
@@ -83,19 +82,19 @@
       }
       node.children.push(str.shift())
       node.children.push(str.shift())
-      mult(str)
+      MultiplicativeExpression(str)
       node.children.push(str.shift())
       str.unshift(node)
-      return add(str)
+      return AdditiveExpression(str)
     }
     if (str[0].type === 'add') {
       return str[0]
     }
-    mult(str)
-    return add(str)
+    MultiplicativeExpression(str)
+    return AdditiveExpression(str)
   }
 
-  function exp(str) {
+  function Expression(str) {
     if(str[0].type==='add'&&str[1]&&str[1].type==='EOF'){
       let node = {
         type:'exp',
@@ -104,18 +103,18 @@
       str.unshift(node)
       return node
     }
-    add(str)
-    return exp(str)
+    AdditiveExpression(str)
+    return Expression(str)
   }
 
-  function mult(str) {
+  function MultiplicativeExpression(str) {
     if (str[0].type === 'Number') {
       let node = {
         type: 'mult',
         children: [str[0]]
       }
       str[0] = node
-      return mult(str)
+      return MultiplicativeExpression(str)
     }
     if (str[0].type === 'mult' && str[1] && str[1].type === '*') {
       let node = {
@@ -127,7 +126,7 @@
       node.children.push(str.shift())
       node.children.push(str.shift())
       str.unshift(node)
-      return mult(str)
+      return MultiplicativeExpression(str)
     }
     if (str[0].type === 'mult' && str[1] && str[1].type === '/') {
       let node = {
@@ -139,13 +138,13 @@
       node.children.push(str.shift())
       node.children.push(str.shift())
       str.unshift(node)
-      return mult(str)
+      return MultiplicativeExpression(str)
     }
     if (str[0].type === 'mult') {
       return str[0]
     }
   }
-  console.log(exp(source))
+  console.log(Expression(source))
 </script>
 <style></style>
 
