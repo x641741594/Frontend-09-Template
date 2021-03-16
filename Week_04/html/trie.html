@@ -1,56 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>字典树</title>
 </head>
+
 <body>
-  
+
 </body>
 <script src="./kmp.js">
-  console.log(kmp('1232321','323'))
+  console.log(kmp('1232321', '323'))
 </script>
 <script>
   let $ = Symbol('$')
-  class Trie{
-    constructor(){
+  class Trie {
+    constructor() {
       this.root = Object.create(null)
     }
-    insert(word){
+    insert(word) {
       let node = this.root
       for (const s of word) {
-        if(!node[s])
+        if (!node[s])
           node[s] = Object.create(null);
         node = node[s]
       }
-      if(!($ in node)){
+      if (!($ in node)) {
         node[$] = 0
       }
       node[$]++
     }
-    most(){
+    most() {
       let max = 0
       let maxWord = null
-      let visit = (node,word)=>{
-        if(node[$] && node[$]>0){
+      let visit = (node, word) => {
+        if (node[$] && node[$] > 0) {
           max = node[$]
           maxWord = word
         }
         for (const p in node) {
-          visit(node[p],word+p)
+          visit(node[p], word + p)
         }
       }
-      visit(this.root,'')
+      visit(this.root, '')
       console.log(maxWord)
     }
   }
+
   function randomWord(len) {
     var s = ''
     for (let i = 0; i < len; i++) {
-      s+=String.fromCharCode(Math.random()*26 + 'a'.charCodeAt(0))
-      
+      s += String.fromCharCode(Math.random() * 26 + 'a'.charCodeAt(0))
+
     }
     return s
   }
@@ -58,5 +61,55 @@
   for (let i = 0; i < 1000; i++) {
     trie.insert(randomWord(4))
   }
+
+  function find(source, pattern) {
+    let startCount = 0
+    for (let i = 0; i < pattern.length; i++) {
+      // const element = array[i];
+      if (pattern[i] === '*') {
+        startCount++
+      }
+
+    }
+    if (startCount === 0) {
+      for (let i = 0; i < pattern.length; i++) {
+        if (pattern[i] !== source[i] && pattern[i] !== '?') {
+          return false
+        }
+      }
+      return
+    }
+    let i = 0
+    let lastIndex = 0
+    for (i = 0; pattern[i] !== '*'; i++) {
+      if (pattern[i] !== source[i] && pattern[i] !== '?') {
+        return false
+      }
+
+    }
+    lastIndex = i
+    for (let p = 0; p < startCount - 1; p++) {
+      i++;
+      let subPattern = ''
+      while (pattern[i] !== '*') {
+        subPattern += pattern[i]
+        i++;
+      }
+      let reg = new RegExp(subPattern.replace(/\?/g, "[\\s\\S]"), 'g');
+      reg.lastIndex = lastIndex
+      if (!reg.exec(source)) {
+        return false
+      }
+      lastIndex = reg.lastIndex
+
+    }
+    for (let j = 0; j <= source.length - lastIndex && pattern[pattern.length - j] !== '*'; j++) {
+      if (pattern[pattern.length - j] !== source[source.length - j] && pattern[pattern.length - j] !== '?') {
+        return false
+      }
+    }
+    return true
+  }
 </script>
+
 </html>
