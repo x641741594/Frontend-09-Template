@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>第五周作业</title>
+</head>
+<body>
+  <input type="range" id="r" min="0" max="255">
+  <input type="range" id="g" min="0" max="255">
+  <input type="range" id="b" min="0" max="255">
+  <div id="win" style="width: 100px;height: 100px;"></div>
+</body>
+<script>
+  let obj = {
+    r:0,
+    g:0,
+    b:0,
+  }
+  let usedReactiveties = []
+  let callbacks = new Map()
+  let reactives = new Map()
+  let po = reactive(obj)
+  effect(()=>{
+    document.getElementById('r').value = po.r
+  })
+  effect(()=>{
+    document.getElementById('g').value = po.g
+  })
+  effect(()=>{
+    document.getElementById('b').value = po.b
+  })
+  document.getElementById('r').addEventListener('input', e=> po.r = e.target.value)
+  document.getElementById('g').addEventListener('input', e=> po.g = e.target.value)
+  document.getElementById('b').addEventListener('input', e=> po.b = e.target.value)
+
+  effect(()=>{
+    document.getElementById('win').style.backgroundColor = `rgb(${po.r},${po.g},${po.b})`
+  })
+  function effect(callback) {
+    // callbacks.push(callback)
+    usedReactiveties = []
+    callback();
+    for (const reactivety of usedReactiveties) {
+      if(!callbacks.has(reactivety[0])){
+        callbacks.set(reactivety[0],new Map())
+      }
+      if(!callbacks.get(reactivety[0]).has(reactivety[1])){
+        callbacks.get(reactivety[0]).set(reactivety[1],[])
+      }
+      callbacks.get(reactivety[0]).get(reactivety[1]).push(callback)
+      
+    }
+  }
+  function reactive(obj) {
+    if(reactives.has(obj)){
+      return reactives.get(obj)
+    }
+    let proxy = new Proxy(obj,{
+      set(obj,prop,val){
+        obj[prop] = val
+        // console.log(obj,prop,val)
+        if(callbacks.get(obj)){
+          if(callbacks.get(obj).get(prop)){
+            for (const callback of callbacks.get(obj).get(prop)) {
+              callback()
+            }
+          }
+        }
+        return obj[prop]
+      },
+      get(obj,prop){
+        
+        usedReactiveties.push([obj,prop])
+        if(typeof obj[prop]==='object'){
+          return reactive(obj[prop])
+        }
+        return obj[prop]
+      }
+    })
+    reactives.set(obj,proxy)
+    return proxy
+  }
+  po.x = 4
+  po.c = 3
+  console.log(obj,po,po.x)
+</script>
+</html>
