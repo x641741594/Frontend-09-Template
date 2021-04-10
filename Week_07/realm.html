@@ -1,0 +1,62 @@
+<div id="main"></div>
+<script src="https://gw.alipayobjects.com/os/antv/pkg/_antv.g6-3.1.0/build/g6.js"></script>
+<script>
+    const labelCfg = {
+        style: {
+            stroke: 'blue',
+            fill: "#fff",
+            fontSize: 12,
+        },
+    };
+    let y = 0;
+    let sourceList = [
+        'Map', 'Set', 'WeakMap', 'WeakSet',
+        'Object', 'Function', 'Boolean', 'Symbol', 'Error', 'Number', 'BigInt', 'Date', 'String', 'RegExp', 'Array',
+        'ArrayBuffer', 'DataView',
+        'Promise', 'Generator', 'GeneratorFunction', 'AsyncFunction',
+        'Proxy',
+    ];
+    let root = {
+        id: 'realm',
+        label: 'realm',
+        size: 80,
+        x: 100,
+        y: 1000,
+        labelCfg: {
+            style: {
+                ...labelCfg.style,
+                fontSize: 14
+            }
+        }
+    }
+    nodes = sourceList.map(item => ({
+        id: item,
+        label: item,
+        x: 500,
+        y: y = y + 100,
+        labelCfg,
+        shape: 'circle', // 所用图形
+        size: 50 || [10, 10], // 尺寸 || [宽, 高]
+    }))
+    nodes.unshift(root);
+    console.log('nodes', nodes)
+    edges = sourceList.map((item) => ({
+        source: 'realm',
+        target: item
+    }))
+    const data = {
+        // 点集
+        nodes,
+        // 边集
+        edges: edges,
+    };
+
+    const graph = new G6.Graph({
+        container: "main", // String | HTMLElement，必须，在 Step 1 中创建的容器 id 或容器本身
+        width: 800, // Number，必须，图的宽度
+        height: 2300, // Number，必须，图的高度
+    });
+
+    graph.data(data); // 读取 Step 2 中的数据源到图上
+    graph.render(); // 渲染图
+</script>
