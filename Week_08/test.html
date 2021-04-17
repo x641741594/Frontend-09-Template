@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>课堂练习</title>
+</head>
+
+<body>
+
+</body>
+<script>
+  // 3 练习
+  {
+    let str = 'acc'
+    let target = 'a'
+    // 法一
+    str.indexOf(target) > -1
+    // 法二
+    str.includes(target)
+  }
+  // 4 练习
+  {
+    let str = 'acbab'
+
+    function match(str) {
+      let hasA = false
+      for (let s of str) {
+        if (s === 'a') {
+          hasA = true
+        } else if (hasA && s === 'b') {
+          return true
+        } else {
+          hasA = false
+        }
+      }
+      return false
+    }
+    match(str)
+  }
+  // 5 练习
+  {
+    let str = 'acbefab'
+
+    function match(str) {
+      let hasA = false
+      let hasB = false
+      let hasC = false
+      let hasD = false
+      let hasE = false
+
+      for (let s of str) {
+        if (s === 'a') {
+          hasA = true
+        } else if (hasA && s === 'b') {
+          hasB = true
+        } else if (hasA && s === 'c') {
+          hasC = true
+        } else if (hasA && s === 'd') {
+          hasD = true
+        } else if (hasA && s === 'e') {
+          hasE = true
+        } else if (hasA && s === 'f') {
+          return true
+        } else {
+          hasA = false
+          hasB = false
+          hasC = false
+          hasD = false
+          hasE = false
+
+        }
+      }
+      return false
+    }
+    match(str)
+  }
+  // 7 练习一
+  {
+    let str = 'i abcabx cbox' 
+    function match(str){
+      let state = start
+      for (let s of str) {
+        state = state(s);
+      }
+      return state === end;
+    }
+    function start(c){
+      if(c==='a'){
+        return foundA
+      } else {
+        return start
+      }
+    }
+    function end(c){
+      return end
+    }
+    function foundA(c){
+      if(c==='b'){
+        return foundB
+      } else {
+        return start(c)
+      }
+    }
+    function foundB(c){
+      if(c==='c'){
+        return foundC
+      } else {
+        return start(c)
+      }
+    }
+    function foundC(c){
+      if(c==='a'){
+        return foundA2
+      } else {
+        return start(c)
+      }
+    }
+    function foundA2(c){
+      if(c==='b'){
+        return foundB2
+      } else {
+        return start(c)
+      }
+    }
+    function foundB2(c){
+      if(c==='x'){
+        return end
+      } else {
+        return foundB
+      }
+    }
+    console.log(match(str))
+  }
+  // 7 练习二
+  {
+    let str = 'i abababx cbox' 
+    function match(str){
+      let state = start
+      for (let s of str) {
+        state = state(s);
+      }
+      return state === end;
+    }
+    function start(c){
+      if(c==='a'){
+        return foundA
+      } else {
+        return start
+      }
+    }
+    function end(c){
+      return end
+    }
+    function foundA(c){
+      if(c==='b'){
+        return foundB
+      } else {
+        return start(c)
+      }
+    }
+    function foundB(c){
+      if(c==='a'){
+        return foundA2
+      } else {
+        return start(c)
+      }
+    }
+    function foundA2(c){
+      if(c==='b'){
+        return foundB2
+      } else {
+        return start(c)
+      }
+    }
+    function foundB2(c){
+      if(c==='a'){
+        return foundA3
+      } else {
+        return start(c)
+      }
+    }
+    function foundA3(c){
+      if(c==='b'){
+        return foundB3
+      } else {
+        return start(c)
+      }
+    }
+    function foundB3(c){
+      if(c==='x'){
+        return end
+      } else {
+        return start(c)
+      }
+    }
+    console.log(match(str))
+  }
+</script>
+
+</html>
